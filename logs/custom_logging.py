@@ -64,6 +64,10 @@ def log_dataframe_creation(logger: logging.Logger, success: bool, error: str = N
     else:
         logger.error(f"DataFrame creation failed: {error}")
 
+def log_dataframe_columns(logger: logging.Logger, df_name: str, columns: list) -> None:
+    """Log DataFrame columns with context."""
+    logger.debug(f"{df_name} columns: {columns}")
+
 def log_column_list(logger: logging.Logger, columns: list, prefix: str = "") -> None:
     """Log column list with optional prefix."""
     logger.debug(f"{prefix} columns: {columns}")
