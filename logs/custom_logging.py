@@ -76,7 +76,6 @@ def log_process_separator(logger: logging.Logger) -> None:
     """Log a separator line between processing steps."""
     logger.debug("---")
 
-# Example usage function
 def get_logger(log_dir: str = "logs") -> logging.Logger:
     """
     Get or create a configured logger instance.
@@ -86,3 +85,21 @@ def get_logger(log_dir: str = "logs") -> logging.Logger:
         Configured logger instance
     """
     return setup_logger(log_dir)
+
+def log_api_comment(logger: logging.Logger, content: str, pre_process: bool = True) -> None:
+    """
+    Log AI-API comment output with optional pre-processing.
+    
+    Args:
+        logger: Logger instance
+        content: Raw API response content
+        pre_process: Whether to pre-process content (split at '[')
+    """
+    try:
+        comment = content.split("[")[0] if pre_process else content
+        logger.info(f"API Comment: {comment.strip()}")
+    except (AttributeError, IndexError) as e:
+        logger.error(f"Failed to process API comment: {str(e)}")
+        
+# Usage:
+# log_api_comment(logger, result.content[0].text)
