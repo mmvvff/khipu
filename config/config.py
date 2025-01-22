@@ -64,7 +64,7 @@ def get_column_settings() -> dict:
 def get_data_settings() -> dict:
     """Returns dictionary of data processing settings"""
     return {
-        'default_year': 2024,
+        'default_year': 2025,
         'null_marker': 'X*',
         'date_formats': {
             'input': '%Y-%m-%d',
@@ -76,7 +76,23 @@ def get_data_settings() -> dict:
         'separators': {
             'old': '-',
             'new': '/'
-        }
+        },
+        'char_replacements': {
+            'clean_data': {'-*': '', '-': ''},
+            'id_format': {'-': '/'}
+        },
+        'flag_marker': '\*'
+    }
+
+def get_df_settings() -> dict:
+    """Returns DataFrame operation settings"""
+    return {
+        'merge_settings': {
+            'on': "Número animal",
+            'how': "left"
+        },
+        'copy_on_ops': True,
+        'ignore_errors': True
     }
 
 def ensure_paths_exist(paths: dict) -> None:
