@@ -9,8 +9,7 @@ def get_base_paths(root_dir: str = None) -> dict:
         'root': base,
         'data': os.path.join(base, '_data'),
         'logs': os.path.join(base, 'logs'),
-        'output': os.path.join(base, 'output'),
-        'sg_data': os.path.join(base, 'data', 'sg')
+        'output': os.path.join(base, 'output')
     }
 
 def get_batch_structure() -> dict:
