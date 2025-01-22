@@ -4,13 +4,41 @@ from pathlib import Path
 
 def get_base_paths(root_dir: str = None) -> dict:
     """Returns dictionary of base paths for project"""
-    base = root_dir or os.getcwd()
+    base = root_dir or os.path.dirname(os.path.dirname(os.getcwd()))
     return {
         'root': base,
-        'data': os.path.join(base, 'data'),
+        'data': os.path.join(base, '_data'),
         'logs': os.path.join(base, 'logs'),
         'output': os.path.join(base, 'output')
     }
+
+def get_batch_structure() -> dict:
+    """Returns dictionary of batch folder structure"""
+    return {
+        'images': '1_img',
+        'sg_excel': '2_sg_excel',
+        'output': '3_output'
+    }
+
+def get_batch_paths(batch_id: str) -> dict:
+    """Returns paths for specific batch processing"""
+    base_paths = get_base_paths()
+    structure = get_batch_structure()
+    
+    batch_base = os.path.join(base_paths['data'], batch_id)
+    
+    return {
+        'img': os.path.join(batch_base, structure['images']),
+        'sg_excel': os.path.join(batch_base, structure['sg_excel']),
+        'output': os.path.join(batch_base, structure['output'])
+    }
+
+def ensure_batch_paths(batch_id: str) -> dict:
+    """Creates and returns batch directories"""
+    paths = get_batch_paths(batch_id)
+    for path in paths.values():
+        Path(path).mkdir(parents=True, exist_ok=True)
+    return paths
 
 def get_file_patterns() -> dict:
     """Returns dictionary of allowed file patterns"""
@@ -32,7 +60,7 @@ def get_column_settings() -> dict:
 def get_data_settings() -> dict:
     """Returns dictionary of data processing settings"""
     return {
-        'default_year': 2024,
+        'default_year': 2025,
         'null_marker': 'X*',
         'date_format': '%Y-%m-%d',
         'separators': {
