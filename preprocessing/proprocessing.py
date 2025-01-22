@@ -1,9 +1,3 @@
-# file handling
-import os
-
-# image handling
-import base64
-
 # parsing
 import csv
 from io import StringIO
@@ -12,80 +6,42 @@ from io import StringIO
 import locale
 import datetime as dt
 
-# AI API
-import anthropic
-
-# setup constructor
-api_key = os.getenv("CLAUDE_API_KEY")
-if not api_key:
-    raise ValueError("CLAUDE_API_KEY not found")
-client = anthropic.Anthropic(api_key=api_key)
-
-# use AI API to extract text from image
-def extract_img2text(image_path, prompt):
-
-    with open(image_path, "rb") as image_file:
-        image_data = base64.b64encode(image_file.read()).decode('utf-8')
-
-    message = client.messages.create(
-        model="claude-3-5-sonnet-20240620",
-        max_tokens=3200,
-        messages=[{
-            "role":
-            "user",
-            "content": [{
-                "type": "image",
-                "source": {
-                    "type": "base64",
-                    "media_type": "image/jpeg",
-                    "data": image_data,
-                },
-            }, {
-                "type": "text",
-                "text": prompt
-            }],
-        }],
-    )
-    return message
-
-# parse csv string to list of lists
 def parse_csv_string(csv_string):
-    # Remove the leading newline and split the string into lines
+    """Converts a CSV string into a list of lists."""
+    # Clean input string and split into lines
     lines = csv_string.strip().split('\n')
-
-    # Parse the CSV data
+    
+    # Parse CSV using StringIO to simulate file input
     reader = csv.reader(StringIO('\n'.join(lines)))
-
-    # Convert to list of lists
-    data = list(reader)
-    # return output
-    return data
+    
+    return list(reader)
 
 def insert_column_name(df, column_name):
-    # Get the index of the specified column
+    """Inserts a new column containing the column name as a constant value."""
+    # Get position of target column
     col_index = df.columns.get_loc(column_name)
-
-    # Insert a new column with the column name as the constant value
+    
+    # Insert new column with name as value
     df.insert(col_index, f'{column_name}_name', column_name)
-
+    
     return df
 
-
 def convert_to_date(date_string, year):
-    # Set locale to Spanish
+    """Converts Spanish date string to formatted date string (d/mm/yyyy)."""
+    # Set Spanish locale for date parsing
     locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
-
-    # Parse the date string
+    
+    # Parse date string with year
     date_obj = dt.datetime.strptime(f"{date_string} {year}", "%B %A %d %Y")
-
-    # Reset locale
+    
+    # Reset locale to system default
     locale.setlocale(locale.LC_TIME, '')
-
-    # format: 2/03/2024
+    
     return date_obj.strftime('%-d/%m/%Y')
 
-
 def normalize_day(input_string):
+    """Normalizes Spanish day abbreviations to full day names."""
+    # Mapping of abbreviated to full day names
     day_mapping = {
         "Lun":"Lunes",
         "Mar": "Martes",
@@ -97,21 +53,21 @@ def normalize_day(input_string):
         "Sáb": "Sábado",
         "Dom": "Domingo"
     }
-
-    # Convert to title case and split
+    
+    # Split and normalize case
     parts = input_string.title().split()
-
-    # Check if the second part is a day abbreviation
+    
+    # Replace abbreviation if found
     if len(parts) > 1:
-        day_abbr = parts[1][:3]  # Take first 3 characters
+        day_abbr = parts[1][:3]
         if day_abbr in day_mapping:
             parts[1] = day_mapping[day_abbr]
-
+    
     return " ".join(parts)
 
-
 def normalize_month(input_string):
-
+    """Normalizes Spanish month abbreviations to full month names."""
+    # Mapping of abbreviated to full month names
     month_mapping = {
         "Ene": "Enero",
         "Feb": "Febrero",
@@ -126,14 +82,14 @@ def normalize_month(input_string):
         "Nov": "Noviembre",
         "Dic": "Diciembre"
     }
-
-    # Convert to title case and split
+    
+    # Split and normalize case
     parts = input_string.title().split()
-
-    # Check if the second part is a day abbreviation
+    
+    # Replace abbreviation if found
     if len(parts) > 1:
-        month_abbr = parts[0][:3]  # Take first 3 characters
+        month_abbr = parts[0][:3]
         if month_abbr in month_mapping:
             parts[0] = month_mapping[month_abbr]
-
+    
     return " ".join(parts)
