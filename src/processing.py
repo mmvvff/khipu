@@ -21,6 +21,9 @@ def extract_img2text(image_path, prompt):
     with open(image_path, "rb") as image_file:
         image_data = base64.b64encode(image_file.read()).decode('utf-8')
 
+    # setup constructor
+    client = setup_claude_client()
+    
     # Make API call to Claude with image and prompt
     message = client.messages.create(
         model="claude-3-5-sonnet-20240620",
