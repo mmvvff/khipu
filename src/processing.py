@@ -23,7 +23,7 @@ def extract_img2text(image_path, prompt):
 
     # setup constructor
     client = setup_claude_client()
-    
+
     # Make API call to Claude with image and prompt
     message = client.messages.create(
         model="claude-3-5-sonnet-20240620",
@@ -44,3 +44,18 @@ def extract_img2text(image_path, prompt):
         }],
     )
     return message
+
+
+
+
+def reorder_columns(df: pd.DataFrame, priority_cols: List[str]) -> pd.DataFrame:
+    """
+    Reorders DataFrame columns by moving specified columns to the beginning."""
+    result_df = df.copy()
+    for col in reversed(priority_cols):
+        if col in result_df.columns:
+            result_df.insert(0, col, result_df.pop(col))
+    return result_df
+
+# Usage example:
+# data_final = reorder_columns(data_final, ["Número animal", "Fecha Parto"])

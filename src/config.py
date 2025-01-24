@@ -1,6 +1,7 @@
 # config.py
 import os
 from pathlib import Path
+from datetime import datetime
 
 def get_base_paths(root_dir: str = None) -> dict:
     """Returns dictionary of base paths for project"""
@@ -64,7 +65,7 @@ def get_column_settings() -> dict:
 def get_data_settings() -> dict:
     """Returns dictionary of data processing settings"""
     return {
-        'default_year': 2025,
+        'year': datetime.now().year,
         'null_marker': 'X*',
         'date_formats': {
             'input': '%Y-%m-%d',
