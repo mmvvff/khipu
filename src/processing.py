@@ -7,11 +7,13 @@ import base64
 # AI API
 import anthropic
 
-# Setup Claude API client
-api_key = os.getenv("CLAUDE_API_KEY")
-if not api_key:
-    raise ValueError("CLAUDE_API_KEY not found")
-client = anthropic.Anthropic(api_key=api_key)
+
+def setup_claude_client():
+    """Initialize and return an Anthropic client for Claude API."""
+    api_key = os.getenv("CLAUDE_API_KEY")
+    if not api_key:
+        raise ValueError("CLAUDE_API_KEY not found")
+    return anthropic.Anthropic(api_key=api_key)
 
 def extract_img2text(image_path, prompt):
     """Extracts text from an image using Claude API with a given prompt."""
