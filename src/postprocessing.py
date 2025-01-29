@@ -6,6 +6,9 @@ from io import StringIO
 import locale
 import datetime as dt
 
+# data processing
+import pandas as pd
+
 def parse_csv_string(csv_string):
     """Converts a CSV string into a list of lists."""
     # Clean input string and split into lines
@@ -93,3 +96,7 @@ def normalize_month(input_string):
             parts[0] = month_mapping[month_abbr]
     
     return " ".join(parts)
+
+def clean_column_values(series: pd.Series) -> pd.Series:
+    """Remove special characters from column values."""
+    return series.astype(str).str.replace("-*", "").str.replace("-", "")
