@@ -49,6 +49,16 @@ def setup_logger(log_dir: str = "logs", log_level: int = logging.DEBUG) -> loggi
     
     return logger
 
+def get_logger(log_dir: str = "logs") -> logging.Logger:
+    """
+    Get or create a configured logger instance.
+    Args:
+        log_dir: Directory for log files
+    Returns:
+        Configured logger instance
+    """
+    return setup_logger(log_dir)
+
 def log_file_processing(logger: logging.Logger, filename: str) -> None:
     """Log the start of processing for a file."""
     logger.info(f"Processing file: {filename}")
@@ -80,16 +90,6 @@ def log_process_separator(logger: logging.Logger) -> None:
     """Log a separator line between processing steps."""
     logger.debug("---")
 
-def get_logger(log_dir: str = "logs") -> logging.Logger:
-    """
-    Get or create a configured logger instance.
-    Args:
-        log_dir: Directory for log files
-    Returns:
-        Configured logger instance
-    """
-    return setup_logger(log_dir)
-
 def log_api_comment(logger: logging.Logger, content: str, pre_process: bool = True) -> None:
     """
     Log AI-API comment output with optional pre-processing.
@@ -104,6 +104,3 @@ def log_api_comment(logger: logging.Logger, content: str, pre_process: bool = Tr
         logger.info(f"API Comment: {comment.strip()}")
     except (AttributeError, IndexError) as e:
         logger.error(f"Failed to process API comment: {str(e)}")
-        
-# Usage:
-# log_api_comment(logger, result.content[0].text)
