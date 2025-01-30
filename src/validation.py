@@ -1,8 +1,22 @@
 import os
+import re
 
 import pandas as pd
 
 from src.custom_logging import log_exception
+
+def validate_input_string(input_string):
+    # Pattern: 2 digits _ 4 digits _ 1 digit
+    pattern = r"^(0[1-9]|1[0-2])_([0-9]{4})_([1-5])$"
+    
+    if not re.match(pattern, input_string):
+        raise ValueError(
+            "Invalid input format. Must be 'MM_YYYY_N' where:\n"
+            "- MM is month (01-12)\n"
+            "- YYYY is year\n"
+            "- N is a week of month\n"
+            "Example: 01_2024_4"
+        )
 
 # Custom exceptions
 class ImageProcessingError(Exception):
