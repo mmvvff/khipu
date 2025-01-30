@@ -100,3 +100,9 @@ def normalize_month(input_string):
 def clean_column_values(series: pd.Series) -> pd.Series:
     """Remove special characters from column values."""
     return series.astype(str).str.replace("-*", "").str.replace("-", "")
+
+def calculate_flag_counts(df: pd.DataFrame) -> pd.Series:
+    """
+    Calculate flag counts for entire DataFrame at once."""
+    string_df = df.astype(str)
+    return string_df.apply(lambda x: x.str.count('\*')).sum(axis=1)
