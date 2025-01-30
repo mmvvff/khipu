@@ -4,6 +4,9 @@ import os
 # image handling
 import base64
 
+# data processing
+import pandas as pd
+
 # AI API
 import anthropic
 
@@ -46,9 +49,7 @@ def extract_img2text(image_path, prompt):
     return message
 
 
-
-
-def reorder_columns(df: pd.DataFrame, priority_cols: List[str]) -> pd.DataFrame:
+def reorder_columns(df: pd.DataFrame, priority_cols: list[str]) -> pd.DataFrame:
     """
     Reorders DataFrame columns by moving specified columns to the beginning."""
     result_df = df.copy()
@@ -56,6 +57,3 @@ def reorder_columns(df: pd.DataFrame, priority_cols: List[str]) -> pd.DataFrame:
         if col in result_df.columns:
             result_df.insert(0, col, result_df.pop(col))
     return result_df
-
-# Usage example:
-# data_final = reorder_columns(data_final, ["Número animal", "Fecha Parto"])
