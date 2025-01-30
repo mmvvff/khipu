@@ -5,11 +5,6 @@ from datetime import datetime
 def setup_logger(log_dir: str = "logs", log_level: int = logging.DEBUG) -> logging.Logger:
     """
     Configure and return a logger with both file and console handlers.
-    Args:
-        log_dir: Directory for log files
-        log_level: Logging level for the logger
-    Returns:
-        Configured logger instance
     """
     # Create logs directory if it doesn't exist
     if not os.path.exists(log_dir):
@@ -51,12 +46,7 @@ def setup_logger(log_dir: str = "logs", log_level: int = logging.DEBUG) -> loggi
 
 def get_logger(log_dir: str = "logs") -> logging.Logger:
     """
-    Get or create a configured logger instance.
-    Args:
-        log_dir: Directory for log files
-    Returns:
-        Configured logger instance
-    """
+    Get or create a configured logger instance."""
     return setup_logger(log_dir)
 
 def log_file_processing(logger: logging.Logger, filename: str) -> None:
@@ -92,15 +82,13 @@ def log_process_separator(logger: logging.Logger) -> None:
 
 def log_api_comment(logger: logging.Logger, content: str, pre_process: bool = True) -> None:
     """
-    Log AI-API comment output with optional pre-processing.
-    
-    Args:
-        logger: Logger instance
-        content: Raw API response content
-        pre_process: Whether to pre-process content (split at '[')
-    """
+    Log AI-API comment output with optional pre-processing."""
     try:
         comment = content.split("[")[0] if pre_process else content
         logger.info(f"API Comment: {comment.strip()}")
     except (AttributeError, IndexError) as e:
         logger.error(f"Failed to process API comment: {str(e)}")
+
+def log_exception(logger: logging.Logger, exception):
+    # Function to log exceptions
+    logger.error(f"Exception occurred: {str(exception)}")

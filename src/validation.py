@@ -2,6 +2,8 @@ import os
 
 import pandas as pd
 
+from src.custom_logging import log_exception
+
 # Custom exceptions
 class ImageProcessingError(Exception):
     pass
@@ -88,18 +90,18 @@ def handle_processing_errors(func):
         try:
             return func(*args, **kwargs)
         except ImageProcessingError as e:
-            logger.error(f"Image processing error: {str(e)}")
+            log_exception(e)  # Use log_exception for logging
             raise
         except DataParsingError as e:
-            logger.error(f"Data parsing error: {str(e)}")
+            log_exception(e)  # Use log_exception for logging
             raise
         except ValidationError as e:
-            logger.error(f"Validation error: {str(e)}")
+            log_exception(e)  # Use log_exception for logging
             raise
         except DataFrameError as e:
-            logger.error(f"DataFrame error: {str(e)}")
+            log_exception(e)  # Use log_exception for logging
             raise
         except Exception as e:
-            logger.error(f"Unexpected error: {str(e)}")
+            log_exception(e)  # Use log_exception for logging
             raise
     return wrapper
