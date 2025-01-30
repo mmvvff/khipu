@@ -138,8 +138,7 @@ def export_data(
     batch_id: str,
     base_name: str = "leche"
     ) -> tuple[str, str]:
-    """
-    Export milk data to two Excel files with different names."""
+    """Export data to two Excel files with different names."""
     # Create regular output file
     regular_filename = create_filename(base_name, batch_id)
     regular_path = save_dataframes_to_excel(
