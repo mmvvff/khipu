@@ -91,5 +91,5 @@ def log_api_comment(logger: logging.Logger, content: str, pre_process: bool = Tr
 
 def log_exception(exception):
     # Function to log exceptions
-    logger = logging.Logger
+    logger = logging.getLogger(__name__)
     logger.error(f"Exception occurred: {str(exception)}")
