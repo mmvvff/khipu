@@ -89,6 +89,7 @@ def log_api_comment(logger: logging.Logger, content: str, pre_process: bool = Tr
     except (AttributeError, IndexError) as e:
         logger.error(f"Failed to process API comment: {str(e)}")
 
-def log_exception(logger: logging.Logger, exception):
+def log_exception(exception):
     # Function to log exceptions
+    logger = logging.Logger
     logger.error(f"Exception occurred: {str(exception)}")
