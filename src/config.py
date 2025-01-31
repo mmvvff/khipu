@@ -45,7 +45,7 @@ def get_file_patterns() -> dict:
         'images': ('.jpeg', '.jpg'),
         'data': ('.csv', '.xlsx'),
         'logs': '.log',
-        'sg_file': '[Ff]echa*[Pp]arto*.xlsx'
+        'sg_excel': '[Ff]echa*[Pp]arto*.xlsx'
     }
 
 def get_column_settings() -> dict:

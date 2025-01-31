@@ -38,7 +38,7 @@ def setup_batch_environment(batch_id: str) -> dict:
 def load_sg_data(folder_path: str, file_pattern: str, settings: dict, columns: dict) -> pd.DataFrame:
     """Load and validate SG Excel data."""
     # Find the file matching the pattern
-    file_path = glob.glob(os.path.join(folder_path, file_pattern))
+    file_path = glob.glob(os.path.join(folder_path, file_pattern))[0]
     validation.validate_file_path(file_path, ('.xlsx',))
 
     # Read and process the matched file
@@ -147,7 +147,6 @@ def main(batch_id):
         folder_output = batch_paths['output']
 
         # Get configurations
-        paths = config.get_base_paths()
         patterns = config.get_file_patterns()
         columns = config.get_column_settings()
         settings = config.get_data_settings()
@@ -155,7 +154,7 @@ def main(batch_id):
         # Load and validate SG data
         data_sg = load_sg_data(
             folder_sg_path,
-            patterns['sg_file'],
+            patterns['sg_excel'],
             settings,
             columns
         )
