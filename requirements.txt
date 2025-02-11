@@ -1,0 +1,22 @@
+# Core data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Image processing dependencies
+Pillow>=10.0.0
+
+# API and cloud services
+anthropic>=0.7.0
+
+# File handling and environment
+python-dotenv>=1.0.0
+
+# Date handling
+python-dateutil>=2.8.2
+
+# Excel file handling
+openpyxl>=3.1.0
+xlrd>=2.0.1
+
+# Logging and debugging
+logging>=0.5.1.2
