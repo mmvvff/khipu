@@ -53,7 +53,7 @@ def process_image(image_path: str, prompt_input: str, cols_list: list, year: int
         return data_df, cols_list
     except Exception as e:
         logger.error(f"Error creating DataFrame: {e}")
-        return None, cols_list
+        sys.exit(1)  # Exit with error code 1
 
 def process_dataframe(data_df: pd.DataFrame, year: int, data_sg: pd.DataFrame, logger) -> pd.DataFrame:
     """Process the DataFrame with all necessary transformations."""
