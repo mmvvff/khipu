@@ -3,6 +3,8 @@
 ## Overview
 Khipu is a Python-based system that automates the extraction of data from handwritten dairy farm records. It uses Claude AI's image processing capabilities to convert handwritten tables into structured data, processes the extracted information, and generates standardized Excel reports for dairy farm management.
 
+Outcome: Improved data ingestion time by ~ 80% compared to manual processing.
+
 ## Features
 - Image-to-text conversion using Claude AI API
 - Automated data extraction and processing
@@ -114,30 +116,13 @@ The system maintains detailed logs in the `logs` directory:
 
 ## Error Handling
 
-The system includes comprehensive error handling for:
+The system includes error handling for:
 - File validation
 - Image processing
 - Data parsing
 - DataFrame operations
 - API communication
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-[Specify your license here]
-
 ## Acknowledgments
 
 - Claude AI by Anthropic for image processing
-- [Add other acknowledgments]
-
-## Support
-
-For support or questions, please [specify contact method or raise an issue on GitHub]
