@@ -25,7 +25,8 @@ def process_image(image_path: str, prompt_input: str, cols_list: list, year: int
         clogs.log_api_comment(logger, result.content[0].text)
     except Exception as e:
         logger.error(f"Error processing image: {e}")
-        return None, cols_list
+        sys.exit(1)  # Exit with error code 1
+        # return None, cols_list
 
     # Parse the API response
     data_string = result.content[0].text.split("[")[1].replace("]", "")
@@ -181,8 +182,8 @@ Instruction 9: Do not include any additional comments after final output.
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python3 khipu.py <batch_id>")
-        print("Example: python3 khipu.py 01_2024_4")
+        print("Usage: python3 khipu_v01.py <batch_id>")
+        print("Example: python3 khipu_v01.py 01_2024_4")
         sys.exit(1)
     
     batch_id = sys.argv[1]
