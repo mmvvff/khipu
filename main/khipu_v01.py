@@ -8,17 +8,29 @@ import sys
 # tabular data
 import pandas as pd
 
+from src import custom_logging as clogs, config, processing, postprocessing
+
 # Add scripts folder to Python path and import custom modules
 path_scripts = os.path.abspath(os.path.join(os.getcwd(), ".."))
 sys.path.append(path_scripts)
-from src import custom_logging as clogs, config, processing, postprocessing
+
 
 # Custom exception for column errors
 class NoColsError(Exception):
     pass
 
-def process_image(image_path: str, prompt_input: str, cols_list: list, year: int, data_sg: pd.DataFrame, logger) -> tuple[pd.DataFrame, list]:
-    """Process a single image and return the processed DataFrame and updated column list."""
+
+def process_image(
+        image_path: str,
+        prompt_input: str,
+        cols_list: list,
+        year: int,
+        data_sg: pd.DataFrame, logger
+        ) -> tuple[pd.DataFrame, list]:
+    """
+    Process a single image and
+    return the processed DataFrame and updated column list.
+    """
     # Process image with Claude API
     try:
         result = processing.extract_img2text(image_path, prompt_input)
@@ -38,10 +50,13 @@ def process_image(image_path: str, prompt_input: str, cols_list: list, year: int
             cols_list = parsed_data[0]
             clogs.log_column_status(logger, "initialized", cols_list)
         else:
-            clogs.log_validation_error(logger, parsed_data[0], "No 'vaca' found")
+            clogs.log_validation_error(
+                logger, parsed_data[0], "No 'vaca' found")
             raise NoColsError("No columns found: Check image folder")
     else:
-        if any("vaca" in s.lower() for s in parsed_data[0]) and (cols_list != parsed_data[0]):
+        if any(
+            "vaca" in s.lower() for s in parsed_data[0]) and (
+                cols_list != parsed_data[0]):
             cols_list = parsed_data[0]
             clogs.log_column_status(logger, "updated", cols_list)
         else:
@@ -56,7 +71,13 @@ def process_image(image_path: str, prompt_input: str, cols_list: list, year: int
         logger.error(f"Error creating DataFrame: {e}")
         sys.exit(1)  # Exit with error code 1
 
-def process_dataframe(data_df: pd.DataFrame, year: int, data_sg: pd.DataFrame, logger) -> pd.DataFrame:
+
+def process_dataframe(
+        data_df: pd.DataFrame,
+        year: int,
+        data_sg: pd.DataFrame,
+        logger
+        ) -> pd.DataFrame:
     """Process the DataFrame with all necessary transformations."""
     # Calculate flags
     data_df['flag_count'] = postprocessing.calculate_flag_counts(data_df)
@@ -68,9 +89,10 @@ def process_dataframe(data_df: pd.DataFrame, year: int, data_sg: pd.DataFrame, l
         col_index = data_df.columns.get_loc(col)
         col_label_str = postprocessing.normalize_month(
             postprocessing.normalize_day(col.replace(".", "")))
-        
-        data_df.insert(col_index, f'Fecha {col_label_num}',
-                      postprocessing.convert_to_date(col_label_str, year=year))
+
+        data_df.insert(
+            col_index, f'Fecha {col_label_num}',
+            postprocessing.convert_to_date(col_label_str, year=year))
         col_label_num += 1
         data_df = data_df.rename(columns={col: "Kg/Leche"}).copy()
 
@@ -89,7 +111,8 @@ def process_dataframe(data_df: pd.DataFrame, year: int, data_sg: pd.DataFrame, l
     # Merge with Excel data
     clogs.log_dataframe_columns(logger, "data_df", data_df.columns.tolist())
     data_final = data_df.merge(data_sg, on="Número animal", how="left")
-    clogs.log_dataframe_columns(logger, "data_final", data_final.columns.tolist())
+    clogs.log_dataframe_columns(
+        logger, "data_final", data_final.columns.tolist())
 
     # Handle missing dates and reorder columns
     data_final["Fecha Parto"] = data_final["Fecha Parto"].fillna("X*").copy()
@@ -97,6 +120,7 @@ def process_dataframe(data_df: pd.DataFrame, year: int, data_sg: pd.DataFrame, l
     data_final = processing.reorder_columns(data_final, cols_to_move)
 
     return data_final
+
 
 def setup_processing(batch_id: str) -> tuple:
     """Set up all necessary configurations and paths for processing."""
@@ -113,7 +137,10 @@ def setup_processing(batch_id: str) -> tuple:
     settings = config.get_data_settings()
 
     # Process Excel configuration file
-    file_path = glob.glob(os.path.join(batch_paths['sg_excel'], patterns['sg_excel']))[0]
+    file_path = glob.glob(
+        os.path.join(
+            batch_paths['sg_excel'],
+            patterns['sg_excel']))[0]
     data_sg = pd.read_excel(
         file_path,
         header=settings['excel_settings']['header_row']
@@ -127,6 +154,7 @@ def setup_processing(batch_id: str) -> tuple:
 
     return batch_paths, settings, data_sg, logger
 
+
 def main(batch_id: str) -> None:
     """Main function to process batch of images."""
     try:
@@ -136,11 +164,15 @@ def main(batch_id: str) -> None:
         # Define prompt for image processing
         conf_level = 99.75
         prompt_input = f"""Instruction 1: Convert the text in the image to csv.
-Instruction 2: Employ a strict approach: add 1 asterisk next to the estimated values for those cells whose text-to-digit conversion are below a {conf_level} percent confidence threshold; it does not matter if data is over-flagged.
+Instruction 2: Employ a strict approach: add 1 asterisk next
+to the estimated values for those cells whose text-to-digit conversion
+are below a {conf_level} percent confidence threshold;
+it does not matter if data is over-flagged.
 Instruction 3: Include in comments the confidence threshold used.
 Instruction 4: Do not use outlier-detection as criteria to flag the data.
-Instruction 5: Make sure to not use outlier-detection as criteria to flag the data.
-Instruction 6: If headers are present, include them. If no headers are found, do not include any.
+Instruction 5: Make sure to not use outlier-detection as criteria to flag data.
+Instruction 6: If headers are present, include them.
+If no headers are found, do not include any.
 Instruction 7: Include any comments before returning output. Limit verbosity.
 Instruction 8: Return output enclosed in brackets to facilitate parsing.
 Instruction 9: Do not include any additional comments after final output.
@@ -155,12 +187,12 @@ Instruction 9: Do not include any additional comments after final output.
             if filename.endswith(('.jpeg', '.jpg')):
                 clogs.log_file_processing(logger, filename)
                 image_path = os.path.join(batch_paths['img'], filename)
-                
+
                 data_df, cols_list = process_image(
                     image_path, prompt_input, cols_list, 
                     settings['year'], data_sg, logger
                 )
-                
+
                 if data_df is not None:
                     data_list.append(data_df)
                     clogs.log_process_separator(logger)
@@ -172,7 +204,10 @@ Instruction 9: Do not include any additional comments after final output.
                 folder_output=batch_paths['output'],
                 batch_id=batch_id
             )
-            logger.info(f"Processing completed. Files saved: {regular_file}, {final_file}")
+            logger.info(
+                f"Processing completed. Files saved: {
+                    regular_file}, {final_file}"
+                    )
         else:
             logger.error("No data processed successfully")
 
@@ -180,11 +215,12 @@ Instruction 9: Do not include any additional comments after final output.
         logger.error(f"An error occurred during processing: {e}")
         raise
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 khipu_v01.py <batch_id>")
         print("Example: python3 khipu_v01.py 01_2024_4")
         sys.exit(1)
-    
+
     batch_id = sys.argv[1]
     main(batch_id)
