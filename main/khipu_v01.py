@@ -8,12 +8,10 @@ import sys
 # tabular data
 import pandas as pd
 
-from src import custom_logging as clogs, config, processing, postprocessing
-
 # Add scripts folder to Python path and import custom modules
-path_scripts = os.path.abspath(os.path.join(os.getcwd(), ".."))
-sys.path.append(path_scripts)
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 
+from src import custom_logging as clogs, config, processing, postprocessing
 
 # Custom exception for column errors
 class NoColsError(Exception):
@@ -204,9 +202,7 @@ Instruction 9: Do not include any additional comments after final output.
                 folder_output=batch_paths['output'],
                 batch_id=batch_id
             )
-            logger.info(
-                f"Processing completed. Files saved: {
-                    regular_file}, {final_file}"
+            logger.info(f"Processing completed. Files saved: {regular_file}, {final_file}"
                     )
         else:
             logger.error("No data processed successfully")
