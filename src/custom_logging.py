@@ -45,8 +45,7 @@ def setup_logger(log_dir: str = "logs", log_level: int = logging.DEBUG) -> loggi
     return logger
 
 def get_logger(log_dir: str = "logs") -> logging.Logger:
-    """
-    Get or create a configured logger instance."""
+    """Get or create a configured logger instance."""
     return setup_logger(log_dir)
 
 def log_file_processing(logger: logging.Logger, filename: str) -> None:
@@ -81,8 +80,7 @@ def log_process_separator(logger: logging.Logger) -> None:
     logger.debug("---")
 
 def log_api_comment(logger: logging.Logger, content: str, pre_process: bool = True) -> None:
-    """
-    Log AI-API comment output with optional pre-processing."""
+    """Log AI-API comment output with optional pre-processing."""
     try:
         comment = content.split("[")[0] if pre_process else content
         logger.info(f"API Comment: {comment.strip()}")
