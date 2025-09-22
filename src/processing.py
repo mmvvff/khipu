@@ -29,7 +29,7 @@ def extract_img2text(image_path, prompt):
 
     # Make API call to Claude with image and prompt
     message = client.messages.create(
-        model="claude-3-5-sonnet-20240620",
+        model="claude-sonnet-4-20250514",
         max_tokens=3200,
         messages=[{
             "role": "user",
