@@ -87,6 +87,10 @@ def log_api_comment(logger: logging.Logger, content: str, pre_process: bool = Tr
     except (AttributeError, IndexError) as e:
         logger.error(f"Failed to process API comment: {str(e)}")
 
+def log_validation_error(logger: logging.Logger, data: list, reason: str) -> None:
+    """Log validation errors with context about what failed validation."""
+    logger.error(f"Validation error: {reason}. Data: {data}")
+
 def log_exception(exception):
     # Function to log exceptions
     logger = logging.getLogger(__name__)
