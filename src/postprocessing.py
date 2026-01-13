@@ -51,6 +51,7 @@ def normalize_day(input_string):
         "Mar": "Martes",
         "Mié": "Miércoles",
         "Mie": "Miércoles",
+        "Merc": "Miércoles",
         "Jue": "Jueves",
         "Vie": "Viernes",
         "Sab": "Sábado",
