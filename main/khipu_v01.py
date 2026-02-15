@@ -160,7 +160,7 @@ def main(batch_id: str) -> None:
         batch_paths, settings, data_sg, logger = setup_processing(batch_id)
 
         # Define prompt for image processing
-        conf_level = 95
+        conf_level = 90
         prompt_input = f"""Instruction 1: Convert the text in the image to csv.
 Instruction 2: Employ a strict approach: add 1 asterisk next
 to the estimated values for those cells whose text-to-digit conversion
