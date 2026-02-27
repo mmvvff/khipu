@@ -9,8 +9,7 @@ def get_base_paths(root_dir: str = None) -> dict:
     return {
         'root': base,
         'data': os.path.join(base, '_data'),
-        'logs': os.path.join(base, 'logs'),
-        'output': os.path.join(base, 'output')
+        'logs': os.path.join(base, 'logs')
     }
 
 def get_batch_structure() -> dict:
@@ -108,21 +107,3 @@ def get_logging_config() -> dict:
         'format': '%(asctime)s - %(levelname)s - %(message)s',
         'file': os.path.join(get_base_paths()['logs'], 'process.log')
     }
-
-def validate_config() -> tuple[bool, str]:
-    """
-    Validates configuration settings
-    Returns: Tuple of (success: bool, error_message: str)
-    """
-    try:
-        paths = get_base_paths()
-        ensure_paths_exist(paths)
-        required_configs = [
-            get_file_patterns(),
-            get_column_settings(),
-            get_data_settings(),
-            get_logging_config()
-        ]
-        return all(bool(config) for config in required_configs), ""
-    except Exception as error:
-        return False, str(error)
