@@ -42,32 +42,33 @@ CLAUDE_API_KEY=your_api_key_here
 ## Project Structure
 ```
 khipu/
+├── main/
+│   └── khipu_v01.py        # Main program entry point
 ├── src/
 │   ├── config.py           # Configuration settings
 │   ├── custom_logging.py   # Logging functionality
 │   ├── postprocessing.py   # Data post-processing utilities
 │   ├── processing.py       # Core processing functions
-│   ├── validation.py       # Data validation functions
-│   └── khipu_v01.py       # Main program
+│   └── validation.py       # Data validation functions
+├── notebooks/              # Jupyter notebooks for experimentation
 ├── _data/                  # Data directory
 │   └── [batch_id]/
 │       ├── 1_img/         # Input images
 │       ├── 2_sg_excel/    # Source Excel files
 │       └── 3_output/      # Processed outputs
-├── logs/                   # Log files
-└── output/                 # General output directory
+└── logs/                   # Log files
 ```
 
 ## Usage
 
 Run the program with a batch ID:
 ```bash
-python khipu_v01.py <batch_id>
+python main/khipu_v01.py <batch_id>
 ```
 
 Example:
 ```bash
-python khipu_v01.py 01_2024_4
+python main/khipu_v01.py 01_2024_4
 ```
 
 ### Batch Directory Structure
@@ -87,7 +88,7 @@ Each batch should follow this structure:
 
 ## Configuration
 
-Key configuration settings can be modified in `config.py`:
+Key configuration settings can be modified in `src/config.py`:
 - File paths and directory structure
 - Allowed file patterns
 - Column settings and mappings
