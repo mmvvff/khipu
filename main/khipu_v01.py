@@ -17,6 +17,9 @@ from src import config, postprocessing, processing
 from src import custom_logging as clogs
 from src.validation import DataFrameCreationError, ImageProcessingError
 
+# Load environment variables once at module import
+load_dotenv()
+
 
 # Custom exception for column errors
 class NoColsError(Exception):
@@ -133,8 +136,7 @@ def setup_processing(
     batch_id: str,
 ) -> tuple[dict[str, str], dict[str, Any], pd.DataFrame, logging.Logger]:
     """Set up all necessary configurations and paths for processing."""
-    # Initialize environment and logging
-    load_dotenv()
+    # Initialize logging
     logger = clogs.get_logger()
 
     # Set up batch processing paths
