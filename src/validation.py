@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pandas as pd
@@ -29,10 +30,10 @@ class DataFrameCreationError(ValidationError):
 class Validator:
     """Centralized validation logic"""
 
-    def __init__(self, logger):
+    def __init__(self, logger: logging.Logger):
         self.logger = logger
 
-    def validate_batch_paths(self, batch_paths: dict) -> dict:
+    def validate_batch_paths(self, batch_paths: dict[str, str]) -> dict[str, str]:
         """Validate and return batch processing paths"""
         for path in batch_paths.values():
             if not os.path.exists(path):

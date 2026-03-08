@@ -1,0 +1,20 @@
+{
+  "typeCheckingMode": "basic",
+  "reportMissingImports": "warning",
+  "reportUnknownParameterType": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownVariableType": "none",
+  "reportMissingTypeArgument": "warning",
+  "reportPossiblyUnboundVariable": "error",
+  "pythonVersion": "3.12",
+  "include": [
+    "main",
+    "src"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    ".git",
+    "logs",
+    "_data"
+  ]
+}

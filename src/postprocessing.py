@@ -6,12 +6,13 @@ import datetime as dt
 import locale
 import os
 from io import StringIO
+from typing import Any
 
 # data processing
 import pandas as pd
 
 
-def parse_csv_string(csv_string):
+def parse_csv_string(csv_string: str) -> list[list[str]]:
     """Converts a CSV string into a list of lists."""
     # Clean input string and split into lines
     lines = csv_string.strip().split("\n")
@@ -22,7 +23,7 @@ def parse_csv_string(csv_string):
     return list(reader)
 
 
-def insert_column_name(df, column_name):
+def insert_column_name(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     """Inserts a new column containing the column name as a constant value."""
     # Get position of target column
     col_index = df.columns.get_loc(column_name)
@@ -33,7 +34,7 @@ def insert_column_name(df, column_name):
     return df
 
 
-def convert_to_date(date_string, year):
+def convert_to_date(date_string: str, year: int) -> str:
     """Converts Spanish date string to formatted date string (d/mm/yyyy)."""
     # Set Spanish locale for date parsing
     locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
@@ -47,7 +48,7 @@ def convert_to_date(date_string, year):
     return date_obj.strftime("%-d/%m/%Y")
 
 
-def normalize_day(input_string):
+def normalize_day(input_string: str) -> str:
     """Normalizes Spanish day abbreviations to full day names."""
     # Mapping of abbreviated to full day names
     day_mapping = {
@@ -75,7 +76,7 @@ def normalize_day(input_string):
     return " ".join(parts)
 
 
-def normalize_month(input_string):
+def normalize_month(input_string: str) -> str:
     """Normalizes Spanish month abbreviations to full month names."""
     # Mapping of abbreviated to full month names
     month_mapping = {
@@ -125,7 +126,10 @@ def create_filename(base_name: str, batch_id: str, suffix: str = "") -> str:
 
 
 def save_dataframes_to_excel(
-    dataframes: list, output_path: str, filename: str, sheet_prefix: str = "Sheet"
+    dataframes: list[pd.DataFrame],
+    output_path: str,
+    filename: str,
+    sheet_prefix: str = "Sheet",
 ) -> str:
     """
     Save list of dataframes to Excel file with named sheets."""
@@ -139,7 +143,10 @@ def save_dataframes_to_excel(
 
 
 def export_data(
-    data_list: list, folder_output: str, batch_id: str, base_name: str = "leche"
+    data_list: list[pd.DataFrame],
+    folder_output: str,
+    batch_id: str,
+    base_name: str = "leche",
 ) -> tuple[str, str]:
     """Export data to two Excel files with different names."""
     # Create regular output file

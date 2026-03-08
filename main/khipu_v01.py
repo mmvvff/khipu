@@ -1,8 +1,10 @@
 # Import required libraries
 # file handling
 import glob
+import logging
 import os
 import sys
+from typing import Any
 
 # tabular data
 import pandas as pd
@@ -24,11 +26,11 @@ class NoColsError(Exception):
 def process_image(
     image_path: str,
     prompt_input: str,
-    cols_list: list,
+    cols_list: list[str],
     year: int,
     data_sg: pd.DataFrame,
-    logger,
-) -> tuple[pd.DataFrame, list]:
+    logger: logging.Logger,
+) -> tuple[pd.DataFrame, list[str]]:
     """
     Process a single image and
     return the processed DataFrame and updated column list.
@@ -73,7 +75,10 @@ def process_image(
 
 
 def process_dataframe(
-    data_df: pd.DataFrame, year: int, data_sg: pd.DataFrame, logger
+    data_df: pd.DataFrame,
+    year: int,
+    data_sg: pd.DataFrame,
+    logger: logging.Logger,
 ) -> pd.DataFrame:
     """Process the DataFrame with all necessary transformations."""
     # Calculate flags
@@ -118,7 +123,9 @@ def process_dataframe(
     return data_final
 
 
-def setup_processing(batch_id: str) -> tuple:
+def setup_processing(
+    batch_id: str,
+) -> tuple[dict[str, str], dict[str, Any], pd.DataFrame, logging.Logger]:
     """Set up all necessary configurations and paths for processing."""
     # Initialize environment and logging
     load_dotenv()
@@ -150,6 +157,7 @@ def setup_processing(batch_id: str) -> tuple:
 
 def main(batch_id: str) -> None:
     """Main function to process batch of images."""
+    logger: logging.Logger | None = None
     try:
         # Setup initial configurations
         batch_paths, settings, data_sg, logger = setup_processing(batch_id)
@@ -172,8 +180,8 @@ Instruction 9: Do not include any additional comments after final output.
 """
 
         # Initialize data storage
-        data_list = []
-        cols_list = []
+        data_list: list[pd.DataFrame] = []
+        cols_list: list[str] = []
 
         # Process each image
         for filename in sorted(os.listdir(batch_paths["img"])):
@@ -208,11 +216,13 @@ Instruction 9: Do not include any additional comments after final output.
             logger.error("No data processed successfully")
 
     except (ImageProcessingError, DataFrameCreationError) as e:
-        logger.critical(f"Processing halted: {e.code} - {e.message}")
-        logger.critical("User action required: Fix the issue and re-run the batch")
+        if logger:
+            logger.critical(f"Processing halted: {e.code} - {e.message}")
+            logger.critical("User action required: Fix the issue and re-run the batch")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"An error occurred during processing: {e}")
+        if logger:
+            logger.error(f"An error occurred during processing: {e}")
         raise
 
 
