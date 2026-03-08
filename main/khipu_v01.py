@@ -2,16 +2,19 @@
 # file handling
 import glob
 import os
-from dotenv import load_dotenv
 import sys
 
 # tabular data
 import pandas as pd
+from dotenv import load_dotenv
 
 # Add scripts folder to Python path and import custom modules
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 
-from src import custom_logging as clogs, config, processing, postprocessing
+from src import config, postprocessing, processing
+from src import custom_logging as clogs
+from src.validation import DataFrameCreationError, ImageProcessingError
+
 
 # Custom exception for column errors
 class NoColsError(Exception):
@@ -19,12 +22,13 @@ class NoColsError(Exception):
 
 
 def process_image(
-        image_path: str,
-        prompt_input: str,
-        cols_list: list,
-        year: int,
-        data_sg: pd.DataFrame, logger
-        ) -> tuple[pd.DataFrame, list]:
+    image_path: str,
+    prompt_input: str,
+    cols_list: list,
+    year: int,
+    data_sg: pd.DataFrame,
+    logger,
+) -> tuple[pd.DataFrame, list]:
     """
     Process a single image and
     return the processed DataFrame and updated column list.
@@ -35,8 +39,7 @@ def process_image(
         clogs.log_api_comment(logger, result.content[0].text)
     except Exception as e:
         logger.error(f"Error processing image: {e}")
-        sys.exit(1)  # Exit with error code 1
-        # return None, cols_list
+        raise ImageProcessingError(image_path, str(e))
 
     # Parse the API response
     data_string = result.content[0].text.split("[")[1].replace("]", "")
@@ -48,13 +51,12 @@ def process_image(
             cols_list = parsed_data[0]
             clogs.log_column_status(logger, "initialized", cols_list)
         else:
-            clogs.log_validation_error(
-                logger, parsed_data[0], "No 'vaca' found")
+            clogs.log_validation_error(logger, parsed_data[0], "No 'vaca' found")
             raise NoColsError("No columns found: Check image folder")
     else:
-        if any(
-            "vaca" in s.lower() for s in parsed_data[0]) and (
-                cols_list != parsed_data[0]):
+        if any("vaca" in s.lower() for s in parsed_data[0]) and (
+            cols_list != parsed_data[0]
+        ):
             cols_list = parsed_data[0]
             clogs.log_column_status(logger, "updated", cols_list)
         else:
@@ -67,18 +69,15 @@ def process_image(
         return data_df, cols_list
     except Exception as e:
         logger.error(f"Error creating DataFrame: {e}")
-        sys.exit(1)  # Exit with error code 1
+        raise DataFrameCreationError(image_path, str(e))
 
 
 def process_dataframe(
-        data_df: pd.DataFrame,
-        year: int,
-        data_sg: pd.DataFrame,
-        logger
-        ) -> pd.DataFrame:
+    data_df: pd.DataFrame, year: int, data_sg: pd.DataFrame, logger
+) -> pd.DataFrame:
     """Process the DataFrame with all necessary transformations."""
     # Calculate flags
-    data_df['flag_count'] = postprocessing.calculate_flag_counts(data_df)
+    data_df["flag_count"] = postprocessing.calculate_flag_counts(data_df)
 
     # Process date and milk production columns
     col_label_num = 1
@@ -86,31 +85,30 @@ def process_dataframe(
         data_df[col] = postprocessing.clean_column_values(data_df[col])
         col_index = data_df.columns.get_loc(col)
         col_label_str = postprocessing.normalize_month(
-            postprocessing.normalize_day(col.replace(".", "")))
+            postprocessing.normalize_day(col.replace(".", ""))
+        )
 
         data_df.insert(
-            col_index, f'Fecha {col_label_num}',
-            postprocessing.convert_to_date(col_label_str, year=year))
+            col_index,
+            f"Fecha {col_label_num}",
+            postprocessing.convert_to_date(col_label_str, year=year),
+        )
         col_label_num += 1
         data_df = data_df.rename(columns={col: "Kg/Leche"}).copy()
 
     # Clean up DataFrame
     data_df = data_df.drop(
-        columns=["Nombre", "Becerro", "Fecha PP", "#"],
-        errors="ignore").copy()
+        columns=["Nombre", "Becerro", "Fecha PP", "#"], errors="ignore"
+    ).copy()
 
     # Format animal number column
-    data_df = data_df.rename(columns={
-        data_df.columns[0]: "Número animal"
-    }).copy()
-    data_df["Número animal"] = data_df["Número animal"].str.replace(
-        "-", "/").copy()
+    data_df = data_df.rename(columns={data_df.columns[0]: "Número animal"}).copy()
+    data_df["Número animal"] = data_df["Número animal"].str.replace("-", "/").copy()
 
     # Merge with Excel data
     clogs.log_dataframe_columns(logger, "data_df", data_df.columns.tolist())
     data_final = data_df.merge(data_sg, on="Número animal", how="left")
-    clogs.log_dataframe_columns(
-        logger, "data_final", data_final.columns.tolist())
+    clogs.log_dataframe_columns(logger, "data_final", data_final.columns.tolist())
 
     # Handle missing dates and reorder columns
     data_final["Fecha Parto"] = data_final["Fecha Parto"].fillna("X*").copy()
@@ -135,20 +133,17 @@ def setup_processing(batch_id: str) -> tuple:
     settings = config.get_data_settings()
 
     # Process Excel configuration file
-    file_path = glob.glob(
-        os.path.join(
-            batch_paths['sg_excel'],
-            patterns['sg_excel']))[0]
-    data_sg = pd.read_excel(
-        file_path,
-        header=settings['excel_settings']['header_row']
-    )
+    file_path = glob.glob(os.path.join(batch_paths["sg_excel"], patterns["sg_excel"]))[
+        0
+    ]
+    data_sg = pd.read_excel(file_path, header=settings["excel_settings"]["header_row"])
 
     # Clean up Excel data
-    data_sg = data_sg.rename(columns=columns['rename_map']).copy()
-    data_sg = data_sg[columns['sg_columns']].dropna().copy()
+    data_sg = data_sg.rename(columns=columns["rename_map"]).copy()
+    data_sg = data_sg[columns["sg_columns"]].dropna().copy()
     data_sg["Fecha Parto"] = data_sg["Fecha Parto"].dt.strftime(
-        settings['date_formats']['output'])
+        settings["date_formats"]["output"]
+    )
 
     return batch_paths, settings, data_sg, logger
 
@@ -181,14 +176,18 @@ Instruction 9: Do not include any additional comments after final output.
         cols_list = []
 
         # Process each image
-        for filename in sorted(os.listdir(batch_paths['img'])):
-            if filename.endswith(('.jpeg', '.jpg')):
+        for filename in sorted(os.listdir(batch_paths["img"])):
+            if filename.endswith((".jpeg", ".jpg")):
                 clogs.log_file_processing(logger, filename)
-                image_path = os.path.join(batch_paths['img'], filename)
+                image_path = os.path.join(batch_paths["img"], filename)
 
                 data_df, cols_list = process_image(
-                    image_path, prompt_input, cols_list, 
-                    settings['year'], data_sg, logger
+                    image_path,
+                    prompt_input,
+                    cols_list,
+                    settings["year"],
+                    data_sg,
+                    logger,
                 )
 
                 if data_df is not None:
@@ -199,14 +198,19 @@ Instruction 9: Do not include any additional comments after final output.
         if data_list:
             regular_file, final_file = postprocessing.export_data(
                 data_list=data_list,
-                folder_output=batch_paths['output'],
-                batch_id=batch_id
+                folder_output=batch_paths["output"],
+                batch_id=batch_id,
             )
-            logger.info(f"Processing completed. Files saved: {regular_file}, {final_file}"
-                    )
+            logger.info(
+                f"Processing completed. Files saved: {regular_file}, {final_file}"
+            )
         else:
             logger.error("No data processed successfully")
 
+    except (ImageProcessingError, DataFrameCreationError) as e:
+        logger.critical(f"Processing halted: {e.code} - {e.message}")
+        logger.critical("User action required: Fix the issue and re-run the batch")
+        sys.exit(1)
     except Exception as e:
         logger.error(f"An error occurred during processing: {e}")
         raise
