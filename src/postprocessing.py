@@ -6,7 +6,6 @@ import datetime as dt
 import locale
 import os
 from io import StringIO
-from typing import Any
 
 # data processing
 import pandas as pd
@@ -26,10 +25,10 @@ def parse_csv_string(csv_string: str) -> list[list[str]]:
 def insert_column_name(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     """Inserts a new column containing the column name as a constant value."""
     # Get position of target column
-    col_index = df.columns.get_loc(column_name)
+    col_index = df.columns.get_loc(column_name)  # type: ignore[assignment]
 
     # Insert new column with name as value
-    df.insert(col_index, f"{column_name}_name", column_name)
+    df.insert(col_index, f"{column_name}_name", column_name)  # type: ignore[arg-type]
 
     return df
 

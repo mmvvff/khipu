@@ -38,13 +38,18 @@ def process_image(
     # Process image with Claude API
     try:
         result = processing.extract_img2text(image_path, prompt_input)
-        clogs.log_api_comment(logger, result.content[0].text)
+        # Type narrowing: extract text from content block
+        # content[0] can be TextBlock or RedactedThinkingBlock
+        content_block = result.content[0]
+        text_content = content_block.text  # type: ignore[attr-defined]
+        clogs.log_api_comment(logger, text_content)
     except Exception as e:
         logger.error(f"Error processing image: {e}")
         raise ImageProcessingError(image_path, str(e))
 
     # Parse the API response
-    data_string = result.content[0].text.split("[")[1].replace("]", "")
+    text_content = result.content[0].text  # type: ignore[attr-defined]
+    data_string = text_content.split("[")[1].replace("]", "")
     parsed_data = postprocessing.parse_csv_string(data_string)
 
     # Handle column headers
@@ -66,7 +71,7 @@ def process_image(
 
     # Create and process DataFrame
     try:
-        data_df = pd.DataFrame(parsed_data[1:], columns=cols_list)
+        data_df = pd.DataFrame(parsed_data[1:], columns=cols_list)  # type: ignore[arg-type]
         data_df = process_dataframe(data_df, year, data_sg, logger)
         return data_df, cols_list
     except Exception as e:
@@ -87,14 +92,14 @@ def process_dataframe(
     # Process date and milk production columns
     col_label_num = 1
     for col in data_df.iloc[:, 3:10].columns.tolist():
-        data_df[col] = postprocessing.clean_column_values(data_df[col])
-        col_index = data_df.columns.get_loc(col)
+        data_df[col] = postprocessing.clean_column_values(data_df[col])  # type: ignore[arg-type]
+        col_index = data_df.columns.get_loc(col)  # type: ignore[assignment]
         col_label_str = postprocessing.normalize_month(
             postprocessing.normalize_day(col.replace(".", ""))
         )
 
         data_df.insert(
-            col_index,
+            col_index,  # type: ignore[arg-type]
             f"Fecha {col_label_num}",
             postprocessing.convert_to_date(col_label_str, year=year),
         )
@@ -107,7 +112,8 @@ def process_dataframe(
     ).copy()
 
     # Format animal number column
-    data_df = data_df.rename(columns={data_df.columns[0]: "Número animal"}).copy()
+    first_col = data_df.columns[0]  # type: ignore[assignment]
+    data_df = data_df.rename(columns={first_col: "Número animal"}).copy()  # type: ignore[arg-type]
     data_df["Número animal"] = data_df["Número animal"].str.replace("-", "/").copy()
 
     # Merge with Excel data
@@ -148,11 +154,11 @@ def setup_processing(
     # Clean up Excel data
     data_sg = data_sg.rename(columns=columns["rename_map"]).copy()
     data_sg = data_sg[columns["sg_columns"]].dropna().copy()
-    data_sg["Fecha Parto"] = data_sg["Fecha Parto"].dt.strftime(
+    data_sg["Fecha Parto"] = data_sg["Fecha Parto"].dt.strftime(  # type: ignore[attr-defined]
         settings["date_formats"]["output"]
     )
 
-    return batch_paths, settings, data_sg, logger
+    return batch_paths, settings, data_sg, logger  # type: ignore[return-value]
 
 
 def main(batch_id: str) -> None:
