@@ -93,12 +93,6 @@ def get_df_settings() -> dict[str, Any]:
     }
 
 
-def ensure_paths_exist(paths: dict[str, str]) -> None:
-    """Creates directories if they don't exist"""
-    for path in paths.values():
-        Path(path).mkdir(parents=True, exist_ok=True)
-
-
 def get_logging_config() -> dict[str, Any]:
     """Returns logging configuration settings"""
     return {

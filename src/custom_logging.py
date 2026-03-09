@@ -79,18 +79,6 @@ def log_dataframe_columns(
     logger.debug(f"{df_name} columns: {columns}")
 
 
-def log_column_list(
-    logger: logging.Logger, columns: list[str], prefix: str = ""
-) -> None:
-    """Log column list with optional prefix."""
-    logger.debug(f"{prefix} columns: {columns}")
-
-
-def log_data_error(logger: logging.Logger, error: Exception, context: str = "") -> None:
-    """Log errors with context and traceback."""
-    logger.error(f"{context} Error occurred: {str(error)}", exc_info=True)
-
-
 def log_process_separator(logger: logging.Logger) -> None:
     """Log a separator line between processing steps."""
     logger.debug("---")
@@ -110,9 +98,3 @@ def log_api_comment(
 def log_validation_error(logger: logging.Logger, data: list[Any], reason: str) -> None:
     """Log validation errors with context about what failed validation."""
     logger.error(f"Validation error: {reason}. Data: {data}")
-
-
-def log_exception(exception: Exception) -> None:
-    """Log exceptions."""
-    logger = logging.getLogger(__name__)
-    logger.error(f"Exception occurred: {str(exception)}")
