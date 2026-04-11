@@ -82,21 +82,3 @@ def get_data_settings() -> dict[str, Any]:
         },
         "flag_marker": r"\*",
     }
-
-
-def get_df_settings() -> dict[str, Any]:
-    """Returns DataFrame operation settings"""
-    return {
-        "merge_settings": {"on": "Número animal", "how": "left"},
-        "copy_on_ops": True,
-        "ignore_errors": True,
-    }
-
-
-def get_logging_config() -> dict[str, Any]:
-    """Returns logging configuration settings"""
-    return {
-        "level": "INFO",
-        "format": "%(asctime)s - %(levelname)s - %(message)s",
-        "file": os.path.join(get_base_paths()["logs"], "process.log"),
-    }
