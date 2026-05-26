@@ -148,9 +148,7 @@ def setup_processing(
     settings = config.get_data_settings()
 
     # Process Excel configuration file
-    file_path = glob.glob(os.path.join(batch_paths["sg_excel"], patterns["sg_excel"]))[
-        0
-    ]
+    file_path = glob.glob(os.path.join(batch_paths["sg_excel"], patterns["sg_excel"]))[0]
     data_sg = pd.read_excel(file_path, header=settings["excel_settings"]["header_row"])
 
     # Clean up Excel data
