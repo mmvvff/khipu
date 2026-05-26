@@ -62,7 +62,7 @@ def process_image(
             clogs.log_column_status(logger, "initialized", cols_list)
         else:
             clogs.log_validation_error(logger, parsed_data[0], "No 'vaca' found")
-            raise NoColsError("No columns found: Check image folder")
+            raise NoColsError("No columns found: Check images and legibility")
     else:
         if any("vaca" in s.lower() for s in parsed_data[0]) and (
             cols_list != parsed_data[0]
