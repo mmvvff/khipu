@@ -62,6 +62,7 @@ def process_image(
             clogs.log_column_status(logger, "initialized", cols_list)
         else:
             clogs.log_validation_error(logger, parsed_data[0], "No 'vaca' found")
+            print(parsed_data[0:2])
             raise NoColsError("No columns found: Check images and legibility")
     else:
         if any("vaca" in s.lower() for s in parsed_data[0]) and (
@@ -181,7 +182,7 @@ Instruction 5: Make sure to not use outlier-detection as criteria to flag data.
 Instruction 6: If headers are present, include them.
 If no headers are found, do not include any.
 Instruction 7: Include any comments before returning output. Limit verbosity.
-Instruction 8: Return output enclosed in brackets to facilitate parsing.
+Instruction 8: Return output enclosed in brackets to facilitate parsing; DO NOT delimit output with triple quotes such as "```csv".
 Instruction 9: Do not include any additional comments after final output.
 """
 
